@@ -13,10 +13,18 @@ const app = express();
 
 // Security middleware
 app.use(helmet());
+// CORS configuration
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: [
+      "http://localhost:5173", // Vite dev server
+      "http://localhost:3000", // Alternative React port
+      "http://127.0.0.1:5173", // Alternative localhost
+      "http://127.0.0.1:3000", // Alternative localhost
+    ],
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 

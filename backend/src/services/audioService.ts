@@ -13,8 +13,9 @@ interface CreateSessionData {
 
 interface ProcessAudioData {
   sessionId: string;
-  audioData: any; // Will be replaced with actual audio processing
+  audioData: Buffer;
   timestamp: number;
+  filename?: string;
 }
 
 class AudioService {

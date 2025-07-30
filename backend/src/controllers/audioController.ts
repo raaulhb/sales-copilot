@@ -1,24 +1,51 @@
 import { Request, Response, NextFunction } from "express";
 import { audioService } from "../services/audioService";
 import { ApiResponse, ConversationSession } from "../types";
+import multer from "multer";
+
+// Configure multer for memory storage
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+  },
+});
 
 class AudioController {
+  // Middleware for file upload
+  uploadMiddleware = upload.single("audio");
+
   async processAudio(req: Request, res: Response, next: NextFunction) {
     try {
-      const { sessionId, audioData, timestamp } = req.body;
+      console.log("📝 Processing audio request...");
+      console.log("Body:", req.body);
+      console.log("File:", req.file ? `${req.file.size} bytes` : "No file");
 
-      if (!sessionId || !audioData) {
+      const { sessionId } = req.body;
+      const audioFile = req.file;
+
+      if (!sessionId) {
         return res.status(400).json({
           success: false,
-          error: "Session ID and audio data are required",
+          error: "Session ID is required",
+        } as ApiResponse);
+      }
+
+      if (!audioFile) {
+        return res.status(400).json({
+          success: false,
+          error: "Audio file is required",
         } as ApiResponse);
       }
 
       const result = await audioService.processAudioSegment({
         sessionId,
-        audioData,
-        timestamp: timestamp || Date.now(),
+        audioData: audioFile.buffer, // Use buffer from multer
+        timestamp: Date.now(),
+        filename: audioFile.originalname || "audio.wav",
       });
+
+      console.log("✅ Audio processed successfully");
 
       res.json({
         success: true,
@@ -26,6 +53,7 @@ class AudioController {
         message: "Audio processed successfully",
       } as ApiResponse);
     } catch (error) {
+      console.error("❌ Audio processing error:", error);
       next(error);
     }
   }
@@ -40,12 +68,15 @@ class AudioController {
         clientCompany,
       });
 
+      console.log(`📞 Session started: ${session.id}`);
+
       res.status(201).json({
         success: true,
         data: session,
         message: "Session started successfully",
       } as ApiResponse<ConversationSession>);
     } catch (error) {
+      console.error("❌ Session start error:", error);
       next(error);
     }
   }
