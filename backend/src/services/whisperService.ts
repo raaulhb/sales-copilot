@@ -19,13 +19,13 @@ class WhisperService {
     audioBuffer: Buffer,
     filename: string = "audio.wav"
   ): Promise<WhisperResult> {
-    // Check if OpenAI API key is configured
-    if (
-      !process.env.OPENAI_API_KEY ||
-      process.env.OPENAI_API_KEY === "sua_chave_aqui_quando_tiver"
-    ) {
+    // Check if we should use real AI
+    const useRealAI =
+      process.env.USE_REAL_AI === "true" && process.env.OPENAI_API_KEY;
+
+    if (!useRealAI) {
       console.log(
-        "🤖 Using mock transcription (OpenAI API key not configured)"
+        "🤖 Using mock transcription (USE_REAL_AI=false or no API key)"
       );
       return this.mockTranscription(audioBuffer);
     }
@@ -46,7 +46,7 @@ class WhisperService {
       await writeFile(tempFilePath, audioBuffer);
 
       console.log(
-        `🎤 Transcribing audio with Whisper: ${audioBuffer.length} bytes`
+        `🎤 Transcribing with Whisper: ${audioBuffer.length} bytes → ${tempFilePath}`
       );
 
       // Call OpenAI Whisper API
@@ -61,17 +61,17 @@ class WhisperService {
       // Clean up temp file
       await unlink(tempFilePath);
 
-      console.log("✅ Whisper transcription completed");
+      console.log("✅ Whisper transcription completed:", transcription.text);
 
       return {
-        transcript: transcription.text,
-        confidence: 0.9, // Whisper doesn't provide confidence, use high default
+        transcript: transcription.text || "",
+        confidence: 0.95, // Whisper doesn't provide confidence
         language: transcription.language || "pt",
         duration: transcription.duration || 0,
         segments: (transcription as any).segments || [],
       };
-    } catch (error) {
-      console.error("❌ Whisper transcription error:", error);
+    } catch (error: any) {
+      console.error("❌ Whisper transcription error:", error.message);
 
       // Fallback to mock on error
       console.log("🤖 Falling back to mock transcription");
@@ -106,10 +106,7 @@ class WhisperService {
   }
 
   async isConfigured(): Promise<boolean> {
-    return !!(
-      process.env.OPENAI_API_KEY &&
-      process.env.OPENAI_API_KEY !== "sua_chave_aqui_quando_tiver"
-    );
+    return !!(process.env.OPENAI_API_KEY && process.env.USE_REAL_AI === "true");
   }
 }
 
