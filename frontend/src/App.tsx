@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,7 +10,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import AudioRecorder from "@/components/features/audio/AudioRecorder";
 import LiveTranscription from "@/components/features/audio/LiveTranscription";
-import { TranscriptionResult } from "@/services/audio/speechToText";
+import LiveRecommendations from "@/components/features/audio/LiveRecommendations";
+import { DiscProfile, TranscriptionResult } from "@/types";
 import "./App.css";
 
 interface HealthCheck {
@@ -25,6 +26,10 @@ function App() {
   const [healthStatus, setHealthStatus] = useState<HealthCheck | null>(null);
   const [loading, setLoading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const [currentProfile, setCurrentProfile] = useState<DiscProfile | null>(
+    null
+  );
+  const [latestTranscript, setLatestTranscript] = useState<string>("");
 
   const checkBackendHealth = async () => {
     setLoading(true);
@@ -46,7 +51,7 @@ function App() {
       // Enviar para backend para análise DISC
       const formData = new FormData();
       formData.append("audio", audioBlob, `chunk-${Date.now()}.wav`);
-      formData.append("sessionId", "current-session"); // Implementar session ID depois
+      formData.append("sessionId", "current-session");
 
       const response = await fetch("http://localhost:3001/api/audio/process", {
         method: "POST",
@@ -55,6 +60,19 @@ function App() {
 
       const result = await response.json();
       console.log("🧠 Analysis result:", result);
+
+      // Extract data from response
+      if (result.success && result.data) {
+        const segment = result.data;
+
+        // Update latest transcript
+        if (segment.transcript) {
+          setLatestTranscript(segment.transcript);
+        }
+
+        // Note: Profile data will come from backend logs for now
+        // In a future version, we'll extract it from the API response
+      }
     } catch (error) {
       console.error("❌ Failed to process audio:", error);
     }
@@ -66,12 +84,82 @@ function App() {
 
   const handleTranscriptionResult = (result: TranscriptionResult) => {
     console.log("📝 Transcription result:", result);
-    // Aqui vamos integrar com DISC analysis depois
+    setLatestTranscript(result.transcript);
   };
 
   useEffect(() => {
     checkBackendHealth();
   }, []);
+
+  // Temporary function to simulate profile detection
+  // In real implementation, this would come from backend API response
+  const simulateProfileDetection = (transcript: string): DiscProfile | null => {
+    if (transcript.length < 10) return null;
+
+    const lowerTranscript = transcript.toLowerCase();
+
+    // Simple heuristics to demonstrate
+    if (
+      lowerTranscript.includes("dados") ||
+      lowerTranscript.includes("analisar")
+    ) {
+      return {
+        assertiveness: -30,
+        emotionality: -40,
+        profile: "ANALITICO",
+        confidence: 85,
+      };
+    }
+
+    if (
+      lowerTranscript.includes("equipe") ||
+      lowerTranscript.includes("discutir")
+    ) {
+      return {
+        assertiveness: -20,
+        emotionality: 30,
+        profile: "INTEGRADOR",
+        confidence: 80,
+      };
+    }
+
+    if (
+      lowerTranscript.includes("resultado") ||
+      lowerTranscript.includes("quanto")
+    ) {
+      return {
+        assertiveness: 50,
+        emotionality: -30,
+        profile: "PRAGMATICO",
+        confidence: 75,
+      };
+    }
+
+    if (
+      lowerTranscript.includes("incrível") ||
+      lowerTranscript.includes("futuro")
+    ) {
+      return {
+        assertiveness: 40,
+        emotionality: 60,
+        profile: "INTUITIVO",
+        confidence: 82,
+      };
+    }
+
+    return null;
+  };
+
+  // Update profile when transcript changes
+  React.useEffect(() => {
+    if (latestTranscript) {
+      const detectedProfile = simulateProfileDetection(latestTranscript);
+      if (detectedProfile) {
+        setCurrentProfile(detectedProfile);
+        console.log("🧠 Profile detected:", detectedProfile);
+      }
+    }
+  }, [latestTranscript]);
 
   return (
     <div className="min-h-screen bg-slate-50 p-8">
@@ -85,7 +173,7 @@ function App() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
           {/* Audio Recorder */}
           <div className="space-y-6">
             <AudioRecorder
@@ -93,7 +181,7 @@ function App() {
               onError={handleAudioError}
             />
 
-            {/* We'll track recording state from the recorder */}
+            {/* Recording Status */}
             <Card className="p-4">
               <div className="text-center">
                 <Badge variant={isRecording ? "default" : "outline"}>
@@ -111,9 +199,18 @@ function App() {
             />
           </div>
 
+          {/* Live Recommendations - NOVO */}
+          <div className="lg:col-span-1">
+            <LiveRecommendations
+              currentProfile={currentProfile}
+              latestTranscript={latestTranscript}
+              isRecording={isRecording}
+            />
+          </div>
+
           {/* System Status & Progress */}
           <div className="space-y-6">
-            {/* Backend Status */}
+            {/* Backend Status - mantém o código existente */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -180,19 +277,21 @@ function App() {
                     <Badge className="bg-green-100 text-green-800 border-green-200">
                       ✅ Done
                     </Badge>
-                    <span className="text-sm">Live speech-to-text</span>
+                    <span className="text-sm">GPT-4 DISC analysis</span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-green-100 text-green-800 border-green-200">
+                      ✅ Done
+                    </Badge>
+                    <span className="text-sm">Intelligent recommendations</span>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <Badge className="bg-blue-100 text-blue-800 border-blue-200">
-                      🔄 Next
+                      🔄 Now
                     </Badge>
-                    <span className="text-sm">DISC analysis integration</span>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline">⏳ Todo</Badge>
-                    <span className="text-sm">Real-time recommendations</span>
+                    <span className="text-sm">Live recommendations UI</span>
                   </div>
                 </div>
               </CardContent>
