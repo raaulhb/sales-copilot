@@ -42,3 +42,20 @@ export interface ApiResponse<T = any> {
   message?: string;
   error?: string;
 }
+
+// DISC Analysis Types
+export interface DiscAnalysisResult {
+  profile: DiscProfile;
+  indicators: string[];
+  reasoning: string;
+  recommendations?: string[];
+}
+
+export interface SalesRecommendation {
+  immediateAction: string;
+  approach: string;
+  suggestedScript: string;
+  timing: "immediate" | "short_term" | "long_term";
+  rationale: string;
+  priority: "high" | "medium" | "low";
+}

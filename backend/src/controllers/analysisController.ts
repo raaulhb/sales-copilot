@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { discService } from "../services/discService";
 import { aiService } from "../services/aiService";
 import { ApiResponse, DiscProfile } from "../types";
+import { recommendationsService } from "../services/recommendationsService";
 
 class AnalysisController {
   async analyzeDisc(req: Request, res: Response, next: NextFunction) {
@@ -69,27 +70,37 @@ class AnalysisController {
       next(error);
     }
   }
-
   async generateRecommendations(
     req: Request,
     res: Response,
     next: NextFunction
   ) {
     try {
-      const { profile, conversationContext, salesStage } = req.body;
+      const {
+        profile,
+        transcript,
+        conversationContext,
+        salesStage,
+        clientName,
+        productContext,
+      } = req.body;
 
-      if (!profile) {
+      if (!profile || !transcript) {
         return res.status(400).json({
           success: false,
-          error: "Profile is required for recommendations",
+          error: "Profile and transcript are required for recommendations",
         } as ApiResponse);
       }
 
-      const recommendations = await aiService.generateRecommendations({
-        profile,
-        conversationContext,
-        salesStage,
-      });
+      const recommendations =
+        await recommendationsService.generateRecommendations({
+          profile,
+          transcript,
+          conversationContext,
+          salesStage,
+          clientName,
+          productContext,
+        });
 
       res.json({
         success: true,
@@ -97,6 +108,7 @@ class AnalysisController {
         message: "Recommendations generated successfully",
       } as ApiResponse);
     } catch (error) {
+      console.error("❌ Recommendations generation error:", error);
       next(error);
     }
   }
