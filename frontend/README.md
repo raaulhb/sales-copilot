@@ -1,69 +1,33 @@
-# React + TypeScript + Vite
+# 🎨 Sales Co-pilot Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Modern React application with glassmorphism design and real-time AI-powered sales intelligence**
 
-Currently, two official plugins are available:
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-000000?style=for-the-badge&logo=shadcnui&logoColor=white)](https://ui.shadcn.com/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 📋 Table of Contents
 
-## Expanding the ESLint configuration
+- [Overview](#overview)
+- [Features](#features)
+- [Design System](#design-system)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Component Architecture](#component-architecture)
+- [State Management](#state-management)
+- [Styling](#styling)
+- [Development](#development)
+- [Build & Deploy](#build--deploy)
+- [Testing](#testing)
+- [Troubleshooting](#troubleshooting)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🎯 Overview
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+The Sales Co-pilot frontend is a cutting-edge React application that provides an intuitive, professional interface for real-time sales conversation analysis. Built with modern web technologies and featuring a stunning glassmorphism design, it offers seamless interaction with AI-powered behavioral analysis.
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Key Highlights
+- **Modern Design**: Glassmorphism UI with sophisticated gradients and blur effects
+- **Real-time Updates**: Live audio processing and recommendation display
+- **Responsive Layout**: Optimized for desktop, tablet, and mobile devices
