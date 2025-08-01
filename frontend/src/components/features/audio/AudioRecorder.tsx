@@ -8,7 +8,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Mic, MicOff, Play, Pause, Square, RotateCcw } from "lucide-react";
+import {
+  Mic,
+  MicOff,
+  Play,
+  Pause,
+  Square,
+  RotateCcw,
+  Download,
+} from "lucide-react";
 import { useAudioRecorder } from "@/hooks/audio/useAudioRecorder";
 
 interface AudioRecorderProps {
@@ -47,102 +55,96 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
   const getStatusBadge = () => {
     if (isRecording && !isPaused) {
       return (
-        <Badge
-          variant="destructive"
-          className="animate-pulse"
-        >
+        <Badge className="bg-red-500 text-white animate-pulse shadow-lg">
           🔴 Recording
         </Badge>
       );
     }
     if (isRecording && isPaused) {
-      return <Badge variant="secondary">⏸️ Paused</Badge>;
+      return <Badge className="bg-yellow-500 text-white">⏸️ Paused</Badge>;
     }
     if (audioBlob) {
-      return <Badge variant="default">✅ Ready</Badge>;
+      return (
+        <Badge className="bg-primary text-primary-foreground shadow-md">
+          ✅ Ready
+        </Badge>
+      );
     }
     return <Badge variant="outline">⏹️ Stopped</Badge>;
   };
 
   return (
-    <Card className="w-1/4 max-w-md mb-8">
-      <CardHeader>
-        <div className="flex items-center justify-between mb-8">
-          {" "}
-          {/* Adicionado mb-2 para espaçamento */}
-          <CardTitle className="flex items-center gap-2">
-            <Mic className="h-5 w-5" />
-            Audio Recorder
-          </CardTitle>
+    <Card className="w-full card-hover border-primary/10 shadow-lg">
+      <CardHeader className="pb-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+              <Mic className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <CardTitle className="text-lg">Audio Recorder</CardTitle>
+              <CardDescription className="text-sm">
+                Record para análise em tempo real
+              </CardDescription>
+            </div>
+          </div>
           {getStatusBadge()}
         </div>
-        <CardDescription>
-          Record your conversation for real-time analysis
-        </CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-6">
-        {" "}
-        {/* Aumentado para space-y-6 para mais espaçamento entre blocos */}
         {/* Duration Display */}
-        <div className="text-center">
-          <div className="text-4xl font-mono font-bold text-foreground">
-            {" "}
-            {/* text-foreground para cor do tema */}
+        <div className="text-center py-4">
+          <div className="text-4xl font-mono font-bold text-foreground mb-2">
             {formatDuration(duration)}
           </div>
-          <p className="text-sm text-muted-foreground mt-1">Recording time</p>{" "}
-          {/* text-muted-foreground para cor secundária */}
+          <p className="text-sm text-muted-foreground">Recording time</p>
         </div>
+
         {/* Visual Indicator */}
-        <div className="flex justify-center mb-4">
-          {" "}
-          {/* Adicionado mb-4 para espaçamento */}
+        <div className="flex justify-center mb-6">
           <div
-            className={`w-20 h-20 rounded-full border-4 flex items-center justify-center transition-all duration-300 ${
+            className={`w-24 h-24 rounded-full border-4 flex items-center justify-center transition-all duration-300 ${
               isRecording && !isPaused
-                ? "border-destructive/50 bg-destructive/10 animate-pulse" // Cores do tema para gravação
+                ? "border-red-500/50 bg-red-500/10 animate-pulse shadow-lg"
                 : isPaused
-                  ? "border-secondary/50 bg-secondary/10" // Cores do tema para pausado
+                  ? "border-yellow-500/50 bg-yellow-500/10 shadow-md"
                   : audioBlob
-                    ? "border-primary/50 bg-primary/10" // Cores do tema para pronto
-                    : "border-border bg-background" // Cores do tema para parado
+                    ? "border-primary/50 bg-primary/10 shadow-md"
+                    : "border bg-background"
             }`}
           >
             {isRecording && !isPaused ? (
-              <Mic className="h-8 w-8 text-destructive" /> // Cores do tema para ícone
+              <Mic className="h-10 w-10 text-red-500" />
             ) : isPaused ? (
-              <Pause className="h-8 w-8 text-secondary-foreground" /> // Cores do tema para ícone
+              <Pause className="h-10 w-10 text-yellow-600" />
             ) : audioBlob ? (
-              <Square className="h-8 w-8 text-primary" /> // Cores do tema para ícone
+              <Square className="h-10 w-10 text-primary" />
             ) : (
-              <MicOff className="h-8 w-8 text-muted-foreground" /> // Cores do tema para ícone
+              <MicOff className="h-10 w-10 text-muted-foreground" />
             )}
           </div>
         </div>
+
         {/* Controls */}
-        <div className="flex justify-center gap-2 mb-4">
-          {" "}
-          {/* Adicionado mb-4 para espaçamento */}
+        <div className="space-y-3">
           {!isRecording ? (
             <Button
               onClick={startRecording}
-              className="w-full"
+              className="w-full h-12 text-base font-semibold"
+              size="lg"
             >
-              {" "}
-              {/* Botão padrão usa cor primary do tema */}
-              <Mic className="h-4 w-4 mr-2" />
+              <Mic className="h-5 w-5 mr-2" />
               Start Recording
             </Button>
           ) : (
-            <div className="flex flex-grow gap-2">
-              {" "}
-              {/* flex-grow para ocupar espaço */}
+            <div className="flex gap-2">
               {!isPaused ? (
                 <Button
                   onClick={pauseRecording}
                   variant="outline"
-                  className="flex-1"
+                  className="flex-1 h-12"
+                  size="lg"
                 >
                   <Pause className="h-4 w-4 mr-2" />
                   Pause
@@ -150,78 +152,81 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
               ) : (
                 <Button
                   onClick={resumeRecording}
-                  className="flex-1"
+                  className="flex-1 h-12"
+                  size="lg"
                 >
-                  {" "}
-                  {/* Botão padrão usa cor primary do tema */}
                   <Play className="h-4 w-4 mr-2" />
                   Resume
                 </Button>
               )}
-              <Button
-                onClick={resetRecording}
-                variant="outline"
-                size="icon"
-                className="flex-shrink-0" // Garante que o botão de reset não encolha
-              >
-                <RotateCcw className="h-4 w-4" />
-              </Button>
+
               <Button
                 onClick={stopRecording}
                 variant="destructive"
-                className="flex-1 mb-8"
+                className="flex-1 h-12"
+                size="lg"
               >
                 <Square className="h-4 w-4 mr-2" />
                 Stop
               </Button>
+
+              <Button
+                onClick={resetRecording}
+                variant="outline"
+                size="lg"
+                className="h-12 px-4"
+              >
+                <RotateCcw className="h-4 w-4" />
+              </Button>
             </div>
           )}
         </div>
+
         {/* Error Display */}
         {error && (
-          <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg mb-4">
-            {" "}
-            {/* Cores do tema para erro, adicionado mb-4 */}
-            <p className="text-sm text-destructive">⚠️ {error}</p>
+          <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+            <p className="text-sm text-destructive font-medium">⚠️ {error}</p>
           </div>
         )}
+
         {/* Audio Info & Playback */}
         {audioBlob && (
-          <div className="space-y-3">
-            <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg">
-              {" "}
-              {/* Cores do tema para sucesso */}
-              <p className="text-sm text-primary mb-2">
+          <div className="space-y-4">
+            <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
+              <p className="text-sm text-primary font-medium mb-3">
                 ✅ Audio recorded successfully (
                 {Math.round(audioBlob.size / 1024)}KB)
               </p>
+
               {/* Audio Player */}
               <audio
                 controls
-                className="w-full"
+                className="w-full mb-3"
                 src={URL.createObjectURL(audioBlob)}
               >
                 Your browser does not support the audio element.
               </audio>
-            </div>
 
-            {/* Download Button */}
-            <Button
-              onClick={() => {
-                const url = URL.createObjectURL(audioBlob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = `recording-${Date.now()}.wav`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-              }}
-              variant="secondary" // Usando variant="secondary" para um visual mais limpo
-              className="w-full"
-            >
-              💾 Download Recording
-            </Button>
+              {/* Download Button */}
+              <Button
+                onClick={() => {
+                  const url = URL.createObjectURL(audioBlob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = `recording-${Date.now()}.wav`;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  URL.revokeObjectURL(url);
+                }}
+                variant="outline"
+                className="w-full"
+                size="sm"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Download Recording
+              </Button>
+            </div>
           </div>
         )}
       </CardContent>

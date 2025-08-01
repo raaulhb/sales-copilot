@@ -1,18 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import AudioRecorder from "@/components/features/audio/AudioRecorder";
 import LiveTranscription from "@/components/features/audio/LiveTranscription";
 import LiveRecommendations from "@/components/features/audio/LiveRecommendations";
 import { DiscProfile, TranscriptionResult } from "@/types";
-import "./App.css"; // Certifique-se de que este arquivo está vazio ou removido, conforme discutimos anteriormente.
 
 interface HealthCheck {
   success: boolean;
@@ -25,14 +15,11 @@ interface HealthCheck {
 function App() {
   const [healthStatus, setHealthStatus] = useState<HealthCheck | null>(null);
   const [loading, setLoading] = useState(false);
-  // Nota: O estado 'isRecording' aqui não está sendo atualizado pelo AudioRecorder.
-  // Se você precisa que o status de gravação do AudioRecorder seja refletido aqui,
-  // o AudioRecorder precisaria expor um callback ou um estado para isso.
   const [isRecording, setIsRecording] = useState(false);
   const [currentProfile, setCurrentProfile] = useState<DiscProfile | null>(
     null
   );
-  const [latestTranscript, setLatestTranscript] = useState<string>("");
+  const [latestTranscript, setLatestTranscript] = useState("");
 
   const checkBackendHealth = async () => {
     setLoading(true);
@@ -47,11 +34,10 @@ function App() {
       setLoading(false);
     }
   };
+
   const handleAudioData = async (audioBlob: Blob) => {
     console.log("🎙️ Processing audio chunk:", audioBlob.size, "bytes");
-
     try {
-      // Enviar para backend para análise DISC
       const formData = new FormData();
       formData.append("audio", audioBlob, `chunk-${Date.now()}.wav`);
       formData.append("sessionId", "current-session");
@@ -64,17 +50,11 @@ function App() {
       const result = await response.json();
       console.log("🧠 Analysis result:", result);
 
-      // Extract data from response
       if (result.success && result.data) {
         const segment = result.data;
-
-        // Update latest transcript
         if (segment.transcript) {
           setLatestTranscript(segment.transcript);
         }
-
-        // Note: Profile data will come from backend logs for now
-        // In a future version, we'll extract it from the API response
       }
     } catch (error) {
       console.error("❌ Failed to process audio:", error);
@@ -90,18 +70,10 @@ function App() {
     setLatestTranscript(result.transcript);
   };
 
-  useEffect(() => {
-    checkBackendHealth();
-  }, []);
-
-  // Temporary function to simulate profile detection
-  // In real implementation, this would come from backend API response
   const simulateProfileDetection = (transcript: string): DiscProfile | null => {
     if (transcript.length < 10) return null;
-
     const lowerTranscript = transcript.toLowerCase();
 
-    // Simple heuristics to demonstrate
     if (
       lowerTranscript.includes("dados") ||
       lowerTranscript.includes("analisar")
@@ -113,7 +85,6 @@ function App() {
         confidence: 85,
       };
     }
-
     if (
       lowerTranscript.includes("equipe") ||
       lowerTranscript.includes("discutir")
@@ -125,7 +96,6 @@ function App() {
         confidence: 80,
       };
     }
-
     if (
       lowerTranscript.includes("resultado") ||
       lowerTranscript.includes("quanto")
@@ -137,7 +107,6 @@ function App() {
         confidence: 75,
       };
     }
-
     if (
       lowerTranscript.includes("incrível") ||
       lowerTranscript.includes("futuro")
@@ -149,11 +118,9 @@ function App() {
         confidence: 82,
       };
     }
-
     return null;
   };
 
-  // Update profile when transcript changes
   React.useEffect(() => {
     if (latestTranscript) {
       const detectedProfile = simulateProfileDetection(latestTranscript);
@@ -164,177 +131,166 @@ function App() {
     }
   }, [latestTranscript]);
 
+  useEffect(() => {
+    checkBackendHealth();
+  }, []);
+
   return (
-    <>
-      {/* Container principal da aplicação. Removi a classe 'dark' e 'border rounded-lg' daqui,
-          pois geralmente o tema escuro é controlado por um provedor de tema, e bordas
-          arredondadas são mais comuns em componentes internos, não na tela inteira. */}
-      <div className="min-h-screen bg-background text-foreground p-8">
-        <div className="max-w-7xl mx-auto">
-          {/* Cabeçalho da aplicação */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold mb-4">🧠 Sales Co-pilot</h1>
-            <p className="text-xl text-muted-foreground">
-              AI-powered sales assistant with real-time DISC behavioral analysis
-            </p>
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
+      <div className="container mx-auto px-6 py-12">
+        {/* Beautiful Header */}
+        <div className="text-center mb-16">
+          <div className="flex items-center justify-center gap-6 mb-8">
+            <div className="relative">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-green-500 to-blue-600 flex items-center justify-center shadow-2xl">
+                <span className="text-4xl">🧠</span>
+              </div>
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-green-500 to-blue-600 blur-xl opacity-30"></div>
+            </div>
+            <div className="text-left">
+              <h1 className="text-6xl font-bold bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
+                Sales Co-pilot
+              </h1>
+              <p className="text-green-700 font-semibold text-xl">
+                AI-Powered Sales Intelligence Platform
+              </p>
+            </div>
           </div>
 
-          {/* Layout de grid principal para as seções da aplicação */}
-          {/* Aumentado o gap vertical (gap-y-8) para mais espaçamento entre as linhas de cards.
-              Mantido gap-x-6 para espaçamento horizontal. */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-x-6 gap-y-8">
-            {/* Coluna 1: Gravador de Áudio e Status da Gravação */}
-            {/* space-y-6 fornece espaçamento vertical entre os filhos desta coluna */}
-            <div className="space-y-6">
-              <AudioRecorder
-                onAudioData={handleAudioData}
-                onError={handleAudioError}
-              />
+          <p className="text-xl text-gray-700 max-w-4xl mx-auto mb-10 leading-relaxed">
+            Análise comportamental DISC em tempo real com recomendações
+            inteligentes para{" "}
+            <span className="text-green-600 font-bold">
+              maximizar suas conversões
+            </span>
+            através de inteligência artificial avançada
+          </p>
 
-              {/* Card de Status da Gravação: Alterado p-4 para p-6 para padding consistente */}
-              <Card className="p-6">
-                <div className="text-center">
-                  {/* Variantes de Badge ajustadas para usar as cores do tema */}
-                  <Badge variant={isRecording ? "default" : "outline"}>
-                    {isRecording ? "🎙️ Session Active" : "⏹️ Session Inactive"}
-                  </Badge>
-                </div>
-              </Card>
+          {/* Status Indicators */}
+          <div className="flex items-center justify-center gap-6 flex-wrap">
+            <div className="flex items-center gap-3 px-6 py-3 rounded-full bg-green-100 border border-green-200 shadow-lg">
+              <div className="w-3 h-3 rounded-full bg-green-600 animate-pulse"></div>
+              <span className="text-sm font-bold text-green-800">
+                Sistema Ativo
+              </span>
+            </div>
+            <div className="flex items-center gap-3 px-6 py-3 rounded-full bg-blue-100 border border-blue-200 shadow-lg">
+              <span className="text-sm font-semibold text-blue-800">
+                GPT-4 + Whisper AI
+              </span>
+            </div>
+            <div className="flex items-center gap-3 px-6 py-3 rounded-full bg-purple-100 border border-purple-200 shadow-lg">
+              <span className="text-sm font-semibold text-purple-800">
+                Real-time Analysis
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Grid with Beautiful Cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-8">
+          {/* Audio Recorder Card */}
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-gray-100 p-8 hover:shadow-3xl hover:-translate-y-2 transition-all duration-300">
+            <AudioRecorder
+              onAudioData={handleAudioData}
+              onError={handleAudioError}
+            />
+          </div>
+
+          {/* Live Transcription Card */}
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-gray-100 p-8 hover:shadow-3xl hover:-translate-y-2 transition-all duration-300">
+            <LiveTranscription
+              isRecording={isRecording}
+              onTranscriptionResult={handleTranscriptionResult}
+            />
+          </div>
+
+          {/* Live Recommendations Card */}
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-gray-100 p-8 hover:shadow-3xl hover:-translate-y-2 transition-all duration-300">
+            <LiveRecommendations
+              currentProfile={currentProfile}
+              latestTranscript={latestTranscript}
+              isRecording={isRecording}
+            />
+          </div>
+
+          {/* System Status Card */}
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-gray-100 p-8 hover:shadow-3xl hover:-translate-y-2 transition-all duration-300">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
+                <span className="text-2xl">⚙️</span>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">
+                  System Status
+                </h3>
+                <p className="text-sm text-gray-600">Backend & AI Services</p>
+              </div>
             </div>
 
-            {/* Coluna 2: Transcrição ao Vivo */}
-            {/* Assumindo que LiveTranscription renderiza um Card internamente com seu próprio padding */}
-            <div className="lg:col-span-1">
-              <LiveTranscription
-                isRecording={isRecording}
-                onTranscriptionResult={handleTranscriptionResult}
-              />
-            </div>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center p-4 rounded-xl bg-green-50 border border-green-200">
+                <span className="text-sm font-semibold text-gray-800">
+                  Backend
+                </span>
+                <span
+                  className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold shadow-md ${
+                    healthStatus?.success
+                      ? "bg-green-500 text-white"
+                      : "bg-red-500 text-white"
+                  }`}
+                >
+                  {healthStatus?.success ? "🟢 Online" : "🔴 Offline"}
+                </span>
+              </div>
 
-            {/* Coluna 3: Recomendações ao Vivo - NOVO */}
-            {/* Assumindo que LiveRecommendations renderiza um Card internamente com seu próprio padding */}
-            <div className="lg:col-span-1">
-              <LiveRecommendations
-                currentProfile={currentProfile}
-                latestTranscript={latestTranscript}
-                isRecording={isRecording}
-              />
-            </div>
+              <div className="flex justify-between items-center p-4 rounded-xl bg-blue-50 border border-blue-200">
+                <span className="text-sm font-semibold text-gray-800">
+                  Environment
+                </span>
+                <span className="text-sm font-medium text-blue-700">
+                  {healthStatus?.environment || "Development"}
+                </span>
+              </div>
 
-            {/* Coluna 4: Status do Sistema e Progresso */}
-            {/* space-y-6 fornece espaçamento vertical entre os filhos desta coluna */}
-            <div className="space-y-6">
-              {/* Card de Status do Backend: Adicionado p-6 para padding consistente do card */}
-              <Card className="p-6">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-foreground">
-                    ⚙️ Backend Status
-                    {healthStatus?.success ? (
-                      <Badge className="bg-primary text-primary-foreground">
-                        Online
-                      </Badge>
-                    ) : (
-                      <Badge variant="destructive">Offline</Badge>
-                    )}
-                  </CardTitle>
-                  <CardDescription className="text-muted-foreground">
-                    Connection to Sales Co-pilot API
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {healthStatus ? (
-                    <div className="space-y-2">
-                      <p className="text-sm text-foreground">
-                        <strong>Environment:</strong> {healthStatus.environment}
-                      </p>
-                      <p className="text-sm text-foreground">
-                        <strong>Uptime:</strong>{" "}
-                        {Math.floor(healthStatus.uptime)}s
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Last check:{" "}
-                        {new Date(healthStatus.timestamp).toLocaleTimeString()}
-                      </p>
-                    </div>
-                  ) : (
-                    <p className="text-sm text-destructive">
-                      Failed to connect to backend
-                    </p>
-                  )}
+              <div className="flex justify-between items-center p-4 rounded-xl bg-purple-50 border border-purple-200">
+                <span className="text-sm font-semibold text-gray-800">
+                  Uptime
+                </span>
+                <span className="text-sm font-mono text-purple-700">
+                  {healthStatus ? Math.floor(healthStatus.uptime) : 0}s
+                </span>
+              </div>
 
-                  <Button
-                    onClick={checkBackendHealth}
-                    disabled={loading}
-                    className="w-full"
-                  >
-                    {loading ? "🔄 Checking..." : "🔄 Refresh Status"}
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* Card de Progresso do Desenvolvimento: Adicionado p-6 para padding consistente do card */}
-              <Card className="p-6">
-                <CardHeader>
-                  <CardTitle className="text-foreground">
-                    🚀 Development Progress
-                  </CardTitle>
-                  <CardDescription className="text-muted-foreground">
-                    Current implementation status
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <Badge className="bg-primary text-primary-foreground">
-                        ✅ Done
-                      </Badge>
-                      <span className="text-sm text-foreground">
-                        Audio recording system
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <Badge className="bg-primary text-primary-foreground">
-                        ✅ Done
-                      </Badge>
-                      <span className="text-sm text-foreground">
-                        GPT-4 DISC analysis
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <Badge className="bg-primary text-primary-foreground">
-                        ✅ Done
-                      </Badge>
-                      <span className="text-sm text-foreground">
-                        Intelligent recommendations
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <Badge className="bg-accent text-accent-foreground">
-                        🔄 Now
-                      </Badge>
-                      <span className="text-sm text-foreground">
-                        Live recommendations UI
-                      </span>
-                    </div>
+              <button
+                onClick={checkBackendHealth}
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
+              >
+                {loading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                    Checking...
                   </div>
-                </CardContent>
-              </Card>
+                ) : (
+                  "🔄 Refresh Status"
+                )}
+              </button>
             </div>
           </div>
+        </div>
 
-          {/* Rodapé da aplicação */}
-          <div className="mt-8 text-center">
-            <p className="text-sm text-muted-foreground">
-              🎯 Audio + Transcription System Ready - Test by speaking while
-              recording!
-            </p>
+        {/* Footer */}
+        <div className="mt-16 text-center">
+          <div className="inline-flex items-center gap-4 px-8 py-4 rounded-full bg-gradient-to-r from-green-100 via-blue-100 to-purple-100 border border-green-200 shadow-lg backdrop-blur-sm">
+            <div className="w-3 h-3 rounded-full bg-gradient-to-r from-green-500 to-blue-500 animate-pulse"></div>
+            <span className="text-sm font-bold bg-gradient-to-r from-green-700 to-purple-700 bg-clip-text text-transparent">
+              Sistema Completo • Interface Modernizada • Ready for Production
+            </span>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
