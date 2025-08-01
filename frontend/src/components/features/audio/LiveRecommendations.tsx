@@ -37,7 +37,7 @@ interface SalesRecommendation {
 }
 
 interface LiveRecommendationsProps {
-  currentProfile?: DiscProfile;
+  currentProfile?: DiscProfile | null;
   latestTranscript?: string;
   isRecording?: boolean;
 }
@@ -212,27 +212,30 @@ const LiveRecommendations: React.FC<LiveRecommendationsProps> = ({
 
   return (
     <Card className="w-full">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Lightbulb className="h-5 w-5" />
-            Recomendações Inteligentes
-          </CardTitle>
-          {currentProfile && (
-            <div className="flex justify-center">
-              <Badge className={getProfileColor(currentProfile.profile)}>
-                {getProfileIcon(currentProfile.profile)}{" "}
-                {currentProfile.profile} ({currentProfile.confidence}%)
-              </Badge>
-            </div>
-          )}
-        </div>
+      <CardHeader className="pb-4">
+        <CardTitle className="flex items-center gap-2">
+          <Lightbulb className="h-5 w-5" />
+          Recomendações Inteligentes
+        </CardTitle>
+
         <CardDescription>
           Sugestões personalizadas baseadas no perfil comportamental
         </CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-4">
+        {/* Badge centralizado no início do content, igual aos outros cards */}
+        {currentProfile && (
+          <div className="text-center pb-4 border-b border-gray-100">
+            <Badge
+              className={`${getProfileColor(currentProfile.profile)} px-3 py-1`}
+            >
+              {getProfileIcon(currentProfile.profile)} {currentProfile.profile}{" "}
+              ({currentProfile.confidence}%)
+            </Badge>
+          </div>
+        )}
+
         {loading ? (
           <div className="text-center py-4">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
@@ -240,6 +243,7 @@ const LiveRecommendations: React.FC<LiveRecommendationsProps> = ({
           </div>
         ) : recommendations ? (
           <div className="space-y-4">
+            {/* Resto do conteúdo igual... */}
             {/* Immediate Action */}
             <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
               <div className="flex items-center gap-2 mb-2">
@@ -267,14 +271,14 @@ const LiveRecommendations: React.FC<LiveRecommendationsProps> = ({
                   onClick={() =>
                     handleCopyScript(recommendations.suggestedScript)
                   }
-                  className="text-xs"
+                  className="text-xs flex-shrink-0"
                 >
                   <Copy className="h-3 w-3 mr-1" />
                   {copied ? "Copiado!" : "Copiar"}
                 </Button>
               </div>
               <div className="bg-white p-3 rounded border border-blue-200">
-                <p className="text-blue-700 italic text-sm leading-relaxed">
+                <p className="text-blue-700 italic text-sm leading-relaxed break-words">
                   "{recommendations.suggestedScript}"
                 </p>
               </div>
@@ -286,7 +290,7 @@ const LiveRecommendations: React.FC<LiveRecommendationsProps> = ({
                 <Target className="h-4 w-4" />
                 Estratégia
               </h4>
-              <p className="text-slate-600 text-sm">
+              <p className="text-slate-600 text-sm break-words">
                 {recommendations.approach}
               </p>
             </div>
@@ -296,16 +300,16 @@ const LiveRecommendations: React.FC<LiveRecommendationsProps> = ({
               <h4 className="font-semibold text-green-700 mb-2">
                 Próximos Passos
               </h4>
-              <ul className="space-y-1">
+              <ul className="space-y-2">
                 {recommendations.nextSteps.map((step, index) => (
                   <li
                     key={index}
                     className="flex items-start gap-2 text-sm text-green-600"
                   >
-                    <span className="bg-green-200 text-green-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold mt-0.5">
+                    <span className="bg-green-200 text-green-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold mt-0.5 flex-shrink-0">
                       {index + 1}
                     </span>
-                    <span>{step}</span>
+                    <span className="break-words">{step}</span>
                   </li>
                 ))}
               </ul>
@@ -316,7 +320,7 @@ const LiveRecommendations: React.FC<LiveRecommendationsProps> = ({
               <h4 className="font-semibold text-yellow-700 mb-1">
                 💡 Por que funciona
               </h4>
-              <p className="text-yellow-700 text-sm">
+              <p className="text-yellow-700 text-sm break-words">
                 {recommendations.rationale}
               </p>
             </div>
@@ -327,7 +331,7 @@ const LiveRecommendations: React.FC<LiveRecommendationsProps> = ({
                 <h4 className="font-semibold text-orange-700 mb-1">
                   ⚠️ Possíveis Objeções
                 </h4>
-                <p className="text-orange-600 text-sm">
+                <p className="text-orange-600 text-sm break-words">
                   {recommendations.objectionHandling}
                 </p>
               </div>
