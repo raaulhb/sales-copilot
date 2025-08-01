@@ -219,10 +219,12 @@ const LiveRecommendations: React.FC<LiveRecommendationsProps> = ({
             Recomendações Inteligentes
           </CardTitle>
           {currentProfile && (
-            <Badge className={getProfileColor(currentProfile.profile)}>
-              {getProfileIcon(currentProfile.profile)} {currentProfile.profile}{" "}
-              ({currentProfile.confidence}%)
-            </Badge>
+            <div className="flex justify-center">
+              <Badge className={getProfileColor(currentProfile.profile)}>
+                {getProfileIcon(currentProfile.profile)}{" "}
+                {currentProfile.profile} ({currentProfile.confidence}%)
+              </Badge>
+            </div>
           )}
         </div>
         <CardDescription>

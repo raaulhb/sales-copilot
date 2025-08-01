@@ -131,52 +131,54 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
           {!isRecording ? (
             <Button
               onClick={startRecording}
-              className="w-full h-12 text-base font-semibold"
+              className="w-full h-12 text-base font-semibold bg-green-600 hover:bg-green-700 text-white"
               size="lg"
             >
               <Mic className="h-5 w-5 mr-2" />
               Start Recording
             </Button>
           ) : (
-            <div className="flex gap-2">
-              {!isPaused ? (
+            <div className="space-y-3">
+              {/* Primeira linha: Pause/Resume + Stop */}
+              <div className="grid grid-cols-2 gap-3">
+                {!isPaused ? (
+                  <Button
+                    onClick={pauseRecording}
+                    className="h-12 bg-yellow-500 hover:bg-yellow-600 text-white font-medium"
+                    size="lg"
+                  >
+                    <Pause className="h-4 w-4 mr-2" />
+                    Pause
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={resumeRecording}
+                    className="h-12 bg-green-600 hover:bg-green-700 text-white font-medium"
+                    size="lg"
+                  >
+                    <Play className="h-4 w-4 mr-2" />
+                    Resume
+                  </Button>
+                )}
+
                 <Button
-                  onClick={pauseRecording}
-                  variant="outline"
-                  className="flex-1 h-12"
+                  onClick={stopRecording}
+                  className="h-12 bg-red-500 hover:bg-red-600 text-white font-medium"
                   size="lg"
                 >
-                  <Pause className="h-4 w-4 mr-2" />
-                  Pause
+                  <Square className="h-4 w-4 mr-2" />
+                  Stop
                 </Button>
-              ) : (
-                <Button
-                  onClick={resumeRecording}
-                  className="flex-1 h-12"
-                  size="lg"
-                >
-                  <Play className="h-4 w-4 mr-2" />
-                  Resume
-                </Button>
-              )}
+              </div>
 
-              <Button
-                onClick={stopRecording}
-                variant="destructive"
-                className="flex-1 h-12"
-                size="lg"
-              >
-                <Square className="h-4 w-4 mr-2" />
-                Stop
-              </Button>
-
+              {/* Segunda linha: Reset */}
               <Button
                 onClick={resetRecording}
-                variant="outline"
-                size="lg"
-                className="h-12 px-4"
+                className="w-full h-10 bg-gray-500 hover:bg-gray-600 text-white font-medium"
+                size="sm"
               >
-                <RotateCcw className="h-4 w-4" />
+                <RotateCcw className="h-4 w-4 mr-2" />
+                Reset Recording
               </Button>
             </div>
           )}
