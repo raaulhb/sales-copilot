@@ -17,14 +17,17 @@ app.use(helmet());
 app.use(
   cors({
     origin: [
-      "http://localhost:5173", // Vite dev server
+      "http://localhost:5173", // Vite dev server (MVP)
       "http://localhost:3000", // Alternative React port
       "http://127.0.0.1:5173", // Alternative localhost
       "http://127.0.0.1:3000", // Alternative localhost
+      // ✅ ADICIONAR staging:
+      "http://localhost:5174", // Vite staging server
+      "http://127.0.0.1:5174", // Alternative localhost staging
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Environment"], // ✅ Adicionar header staging
   })
 );
 
