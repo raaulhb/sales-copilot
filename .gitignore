@@ -40,4 +40,7 @@ coverage/
 
 # OS
 .DS_Store
-Thumbs.db
+Thumbs.dbbackend/.env.staging
+frontend/.env.staging
+backend/.env.staging
+frontend/.env.staging
