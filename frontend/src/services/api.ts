@@ -1,4 +1,9 @@
 import axios from "axios";
+import {
+  ExpandedDISCProfile,
+  MBTIProfile,
+  BehavioralAnalysisResponse,
+} from "../types";
 
 // Configuração de ambiente
 const API_BASE_URL =
@@ -68,6 +73,25 @@ export interface AnalysisResponse {
   };
 }
 
+// Response types para API expandida
+export interface ExpandedAnalysisResponse {
+  success: boolean;
+  data: ExpandedDISCProfile;
+  message: string;
+}
+
+export interface MBTIAnalysisResponse {
+  success: boolean;
+  data: MBTIProfile;
+  message: string;
+}
+
+export interface CompleteBehavioralResponse {
+  success: boolean;
+  data: BehavioralAnalysisResponse;
+  message: string;
+}
+
 // Funções da API
 export const apiService = {
   // Health check
@@ -97,6 +121,29 @@ export const apiService = {
   // Gerar recomendações (se existir endpoint separado)
   async generateRecommendations(analysisData: any) {
     const response = await api.post("/analysis/recommendations", analysisData);
+    return response.data;
+  },
+  // Análise DISC expandida com FDNA
+  async processExpandedDISC(
+    transcript: string
+  ): Promise<ExpandedAnalysisResponse> {
+    const response = await api.post("/analysis/expanded-disc", { transcript });
+    return response.data;
+  },
+
+  // Análise MBTI
+  async processMBTI(transcript: string): Promise<MBTIAnalysisResponse> {
+    const response = await api.post("/analysis/mbti", { transcript });
+    return response.data;
+  },
+
+  // Análise comportamental completa (DISC + MBTI)
+  async processExpandedBehavioral(
+    transcript: string
+  ): Promise<CompleteBehavioralResponse> {
+    const response = await api.post("/analysis/expanded-behavioral", {
+      transcript,
+    });
     return response.data;
   },
 };

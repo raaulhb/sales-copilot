@@ -69,7 +69,9 @@ const LiveRecommendations: React.FC<LiveRecommendationsProps> = ({
     setLoading(true);
     try {
       const response = await fetch(
-        "http://localhost:3001/api/analysis/recommendations",
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:3001/api"
+        }/analysis/recommendations`,
         {
           method: "POST",
           headers: {
@@ -132,13 +134,13 @@ const LiveRecommendations: React.FC<LiveRecommendationsProps> = ({
   const getPriorityIcon = (priority: string) => {
     switch (priority) {
       case "high":
-        return <AlertCircle className="h-4 w-4 text-red-600" />;
+        return <AlertCircle className="w-4 h-4 text-red-600" />;
       case "medium":
-        return <Clock className="h-4 w-4 text-yellow-600" />;
+        return <Clock className="w-4 h-4 text-yellow-600" />;
       case "low":
-        return <CheckCircle className="h-4 w-4 text-green-600" />;
+        return <CheckCircle className="w-4 h-4 text-green-600" />;
       default:
-        return <Target className="h-4 w-4 text-blue-600" />;
+        return <Target className="w-4 h-4 text-blue-600" />;
     }
   };
 
@@ -167,7 +169,7 @@ const LiveRecommendations: React.FC<LiveRecommendationsProps> = ({
       <Card className="w-full">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Lightbulb className="h-5 w-5" />
+            <Lightbulb className="w-5 h-5" />
             Recomendações Inteligentes
           </CardTitle>
           <CardDescription>
@@ -175,8 +177,8 @@ const LiveRecommendations: React.FC<LiveRecommendationsProps> = ({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-8 text-slate-500">
-            <Lightbulb className="h-12 w-12 mx-auto mb-4 opacity-50" />
+          <div className="py-8 text-center text-slate-500">
+            <Lightbulb className="w-12 h-12 mx-auto mb-4 opacity-50" />
             <p className="mb-2">Inicie uma gravação para receber</p>
             <p className="text-sm">recomendações personalizadas</p>
           </div>
@@ -191,16 +193,16 @@ const LiveRecommendations: React.FC<LiveRecommendationsProps> = ({
       <Card className="w-full">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Lightbulb className="h-5 w-5" />
+            <Lightbulb className="w-5 h-5" />
             Recomendações Inteligentes
-            <Badge className="bg-blue-100 text-blue-800 border-blue-200 animate-pulse">
+            <Badge className="text-blue-800 bg-blue-100 border-blue-200 animate-pulse">
               🎤 Analisando...
             </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-6">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
+          <div className="py-6 text-center">
+            <div className="w-8 h-8 mx-auto mb-3 border-b-2 border-blue-600 rounded-full animate-spin"></div>
             <p className="text-sm text-slate-600">
               Analisando perfil comportamental...
             </p>
@@ -214,7 +216,7 @@ const LiveRecommendations: React.FC<LiveRecommendationsProps> = ({
     <Card className="w-full">
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2">
-          <Lightbulb className="h-5 w-5" />
+          <Lightbulb className="w-5 h-5" />
           Recomendações Inteligentes
         </CardTitle>
 
@@ -226,7 +228,7 @@ const LiveRecommendations: React.FC<LiveRecommendationsProps> = ({
       <CardContent className="space-y-4">
         {/* Badge centralizado no início do content, igual aos outros cards */}
         {currentProfile && (
-          <div className="text-center pb-4 border-b border-gray-100">
+          <div className="pb-4 text-center border-b border-gray-100">
             <Badge
               className={`${getProfileColor(currentProfile.profile)} px-3 py-1`}
             >
@@ -237,30 +239,30 @@ const LiveRecommendations: React.FC<LiveRecommendationsProps> = ({
         )}
 
         {loading ? (
-          <div className="text-center py-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+          <div className="py-4 text-center">
+            <div className="w-8 h-8 mx-auto mb-2 border-b-2 border-blue-600 rounded-full animate-spin"></div>
             <p className="text-sm text-slate-500">Gerando recomendações...</p>
           </div>
         ) : recommendations ? (
           <div className="space-y-4">
             {/* Resto do conteúdo igual... */}
             {/* Immediate Action */}
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="p-4 border border-red-200 rounded-lg bg-red-50">
               <div className="flex items-center gap-2 mb-2">
                 {getPriorityIcon(recommendations.priority)}
                 <h4 className="font-semibold text-red-800">Ação Imediata</h4>
                 {getTimingBadge(recommendations.timing)}
               </div>
-              <p className="text-red-700 font-medium">
+              <p className="font-medium text-red-700">
                 {recommendations.immediateAction}
               </p>
             </div>
 
             {/* Suggested Script */}
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="p-4 border border-blue-200 rounded-lg bg-blue-50">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4 text-blue-600" />
+                  <MessageSquare className="w-4 h-4 text-blue-600" />
                   <h4 className="font-semibold text-blue-800">
                     Script Sugerido
                   </h4>
@@ -271,33 +273,33 @@ const LiveRecommendations: React.FC<LiveRecommendationsProps> = ({
                   onClick={() =>
                     handleCopyScript(recommendations.suggestedScript)
                   }
-                  className="text-xs flex-shrink-0"
+                  className="flex-shrink-0 text-xs"
                 >
-                  <Copy className="h-3 w-3 mr-1" />
+                  <Copy className="w-3 h-3 mr-1" />
                   {copied ? "Copiado!" : "Copiar"}
                 </Button>
               </div>
-              <div className="bg-white p-3 rounded border border-blue-200">
-                <p className="text-blue-700 italic text-sm leading-relaxed break-words">
+              <div className="p-3 bg-white border border-blue-200 rounded">
+                <p className="text-sm italic leading-relaxed text-blue-700 break-words">
                   "{recommendations.suggestedScript}"
                 </p>
               </div>
             </div>
 
             {/* Approach Strategy */}
-            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
-              <h4 className="font-semibold text-slate-700 mb-2 flex items-center gap-2">
-                <Target className="h-4 w-4" />
+            <div className="p-3 border rounded-lg bg-slate-50 border-slate-200">
+              <h4 className="flex items-center gap-2 mb-2 font-semibold text-slate-700">
+                <Target className="w-4 h-4" />
                 Estratégia
               </h4>
-              <p className="text-slate-600 text-sm break-words">
+              <p className="text-sm break-words text-slate-600">
                 {recommendations.approach}
               </p>
             </div>
 
             {/* Next Steps */}
-            <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-              <h4 className="font-semibold text-green-700 mb-2">
+            <div className="p-3 border border-green-200 rounded-lg bg-green-50">
+              <h4 className="mb-2 font-semibold text-green-700">
                 Próximos Passos
               </h4>
               <ul className="space-y-2">
@@ -316,30 +318,30 @@ const LiveRecommendations: React.FC<LiveRecommendationsProps> = ({
             </div>
 
             {/* Rationale */}
-            <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <h4 className="font-semibold text-yellow-700 mb-1">
+            <div className="p-3 border border-yellow-200 rounded-lg bg-yellow-50">
+              <h4 className="mb-1 font-semibold text-yellow-700">
                 💡 Por que funciona
               </h4>
-              <p className="text-yellow-700 text-sm break-words">
+              <p className="text-sm text-yellow-700 break-words">
                 {recommendations.rationale}
               </p>
             </div>
 
             {/* Objection Handling */}
             {recommendations.objectionHandling && (
-              <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
-                <h4 className="font-semibold text-orange-700 mb-1">
+              <div className="p-3 border border-orange-200 rounded-lg bg-orange-50">
+                <h4 className="mb-1 font-semibold text-orange-700">
                   ⚠️ Possíveis Objeções
                 </h4>
-                <p className="text-orange-600 text-sm break-words">
+                <p className="text-sm text-orange-600 break-words">
                   {recommendations.objectionHandling}
                 </p>
               </div>
             )}
           </div>
         ) : currentProfile ? (
-          <div className="text-center py-4 text-slate-500">
-            <Target className="h-8 w-8 mx-auto mb-2 opacity-50" />
+          <div className="py-4 text-center text-slate-500">
+            <Target className="w-8 h-8 mx-auto mb-2 opacity-50" />
             <p className="text-sm">
               Continue falando para receber recomendações
             </p>
