@@ -1,29 +1,4 @@
-export interface DiscProfile {
-  assertiveness: number;
-  emotionality: number;
-  profile: "PRAGMATICO" | "INTUITIVO" | "ANALITICO" | "INTEGRADOR";
-  confidence: number;
-}
-
-export interface SalesRecommendation {
-  immediateAction: string;
-  approach: string;
-  suggestedScript: string;
-  timing: "immediate" | "short_term" | "long_term";
-  rationale: string;
-  priority: "high" | "medium" | "low";
-  objectionHandling?: string;
-  nextSteps: string[];
-}
-
-export interface TranscriptionResult {
-  transcript: string;
-  confidence: number;
-  timestamp: number;
-  duration: number;
-}
-
-// Compatibilidade: alias para o tipo existente
+// Tipos DISC originais (manter compatibilidade)
 export type DISCType = "PRAGMATICO" | "INTUITIVO" | "ANALITICO" | "INTEGRADOR";
 
 // FASE 1: Subtipos FDNA expandidos
@@ -49,13 +24,12 @@ export interface BehavioralAxes {
   reasonEmotion: number; // -100 (Razão) a +100 (Emoção)
 }
 
-// DISC Profile expandido (mantém compatibilidade com DiscProfile)
+// DISC Profile expandido com FDNA
 export interface ExpandedDISCProfile {
-  // Campos compatíveis com DiscProfile atual
-  assertiveness: number;
-  emotionality: number;
-  profile: DISCType;
+  // Mantém compatibilidade com sistema atual
+  type: DISCType;
   confidence: number;
+  reasoning: string;
 
   // Novos campos FDNA
   subtype: FDNASubtype;
@@ -67,7 +41,7 @@ export interface ExpandedDISCProfile {
   };
 }
 
-// FASE 2: MBTI Types
+// FASE 2: Tipos MBTI
 export type MBTIType =
   | "ENFP"
   | "ENFJ"
@@ -102,20 +76,38 @@ export interface MBTIProfile {
   developmentAreas: string[];
 }
 
-// Resposta expandida (backwards compatible)
-export interface ExpandedAnalysisResponse {
+// Resposta completa da análise comportamental
+export interface BehavioralAnalysisResponse {
   transcript: string;
   profiles: {
     disc: ExpandedDISCProfile;
     mbti: MBTIProfile;
   };
   recommendations: {
-    // Mantém compatibilidade com SalesRecommendation
     immediateAction: string;
     script: string;
-    // Novos campos expandidos
+    // Recomendações baseadas nos perfis expandidos
     discBasedStrategy: string;
     mbtiBasedApproach: string;
     combinedInsights: string;
+  };
+}
+
+// Para manter compatibilidade com sistema atual
+export interface LegacyDISCProfile {
+  type: DISCType;
+  confidence: number;
+  reasoning: string;
+}
+
+export interface LegacyAnalysisResponse {
+  success: boolean;
+  data: {
+    transcript: string;
+    profile: LegacyDISCProfile;
+    recommendations: {
+      immediateAction: string;
+      script: string;
+    };
   };
 }

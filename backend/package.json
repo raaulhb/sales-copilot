@@ -9,7 +9,9 @@
     "start": "node dist/server.js",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "dev:staging": "NODE_ENV=staging nodemon src/server.ts",
+    "start:staging": "NODE_ENV=staging node dist/server.js"
   },
   "keywords": [],
   "author": "",
